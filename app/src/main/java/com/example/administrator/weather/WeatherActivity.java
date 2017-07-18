@@ -1,5 +1,6 @@
 package com.example.administrator.weather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.administrator.weather.gson.Forecast;
 import com.example.administrator.weather.gson.Weather;
+import com.example.administrator.weather.service.AutoUpdateService;
 import com.example.administrator.weather.util.HttpUtil;
 import com.example.administrator.weather.util.Utility;
 
@@ -101,7 +103,7 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
         swipeRefresh.setColorSchemeColors(Color.BLUE,Color.GREEN,Color.GRAY);
-        swipeRefresh.setProgressViewEndTarget(true,100);
+        swipeRefresh.setProgressViewEndTarget(false,100);
         SharedPreferences preferences= PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString=preferences.getString("weather",null);
         if (weatherString!=null){
@@ -175,7 +177,9 @@ public class WeatherActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather",responseText);
                             editor.apply();
+
                             showWeatherInfo(weather);
+
                         }else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
@@ -241,6 +245,7 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
-
+        Intent intent=new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 }
